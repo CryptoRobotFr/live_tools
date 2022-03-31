@@ -2,7 +2,6 @@ import sys
 sys.path.append('live_tools/utilities')
 import ccxt
 import pandas as pd
-import ta
 from spot_ftx import SpotFtx
 from datetime import datetime
 import time
