@@ -63,7 +63,7 @@ coin2_balance = ftx.get_detail_balance_of_one_coin(coin2)["free"]
 
 if df_order.empty or len(df_order.loc[df_order["side"] == "buy"]) == 0 or len(df_order.loc[df_order["side"] == "sell"]) == 0:
     print("create new grid")
-    grid_buy, grid_sell = custom_grid(50000, last_order_down = 0.6, last_order_up = 3, down_grid_len=5, up_grid_len=5)
+    grid_buy, grid_sell = custom_grid(current_price, last_order_down = 0.4, last_order_up = 1.2, down_grid_len=5, up_grid_len=5)
     for buy in grid_buy:
         # print(buy,(coin2_balance/buy)/len(grid_buy))
         ftx.place_limit_order(symbol=symbol, side='buy', amount=(coin2_balance/buy)/len(grid_buy), price=buy)
