@@ -1,18 +1,19 @@
 import sys
-sys.path.append('live_tools/utilities')
+sys.path.append('./live_tools')
 import ccxt
 import pandas as pd
-from spot_ftx import SpotFtx
+from utilities.spot_ftx import SpotFtx
 from datetime import datetime
 import time
 import json
 f = open('./live_tools/strategies/grid_spot_usd/last_data.json',)
 last_data = json.load(f)
 f.close()
-
 f = open('./live_tools/secret.json',)
 secret = json.load(f)
 f.close()
+
+account_to_select = "account1"
 
 def custom_grid(first_price, last_order_down = 0.5, last_order_up = 1, down_grid_len=10, up_grid_len=10):
     down_pct_unity = last_order_down / down_grid_len
@@ -32,7 +33,7 @@ def custom_grid(first_price, last_order_down = 0.5, last_order_up = 1, down_grid
 now = datetime.now()
 print(now.strftime("%d-%m %H:%M:%S"))
 
-account_to_select = "account1"
+
 ftx = SpotFtx(
         apiKey=secret[account_to_select]["apiKey"],
         secret=secret[account_to_select]["secret"],
