@@ -13,7 +13,7 @@ secret = json.load(f)
 f.close()
 
 timeframe = "1h"
-account_to_select = "cross_ema"
+account_to_select = "account1"
 
 params_coin = {
     "BTC/USD": {
