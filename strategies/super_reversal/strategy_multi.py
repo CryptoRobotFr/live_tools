@@ -105,7 +105,7 @@ available_wallet_pct = 1
 
 positions = []
 for coin in coin_in_usd:
-    if coin_in_usd[coin] > 0.05 * total_balance:
+    if coin_balance[coin] > float(ftx.get_min_order_amount(coin + "/USD")):
         positions.append(coin + "/USD")
         available_wallet_pct -= params_coin[coin + "/USD"]["wallet_exposure"]
 
@@ -132,6 +132,8 @@ for pair in positions:
         
 new_coin_in_usd = ftx.get_all_balance_in_usd()
 new_coin_in_usd = {x:y for x,y in new_coin_in_usd.items() if y!=0}
+for coin in new_coin_in_usd:
+    new_coin_in_usd[coin] = str(round(new_coin_in_usd[coin], 2))+" $"
 print("My current balance in USD:",new_coin_in_usd)
 
 

@@ -95,7 +95,7 @@ class SpotFtx():
         return {"bid":ticker["bid"],"ask":ticker["ask"]}
 
     def get_min_order_amount(self, symbol):
-        return self._session.markets_by_id[symbol]['limits']['amount']['min']
+        return self._session.markets_by_id[symbol]["info"]["minProvideSize"]
 
     def convert_amount_to_precision(self, symbol, amount):
         return self._session.amount_to_precision(symbol, amount)
