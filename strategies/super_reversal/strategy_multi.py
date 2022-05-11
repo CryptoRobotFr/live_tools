@@ -20,42 +20,42 @@ timeframe = "1h"
 account_to_select = "account1"
 
 params_coin = {
-    "BTC/USDT": {
+    "BTC/USD": {
         "wallet_exposure": 0.1,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 20,
         "long_ema_window": 400
     },
-    "AVAX/USDT": {
+    "AVAX/USD": {
         "wallet_exposure": 0.2,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 25,
         "long_ema_window": 400
     },
-    "LTC/USDT": {
+    "LTC/USD": {
         "wallet_exposure": 0.2,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 5,
         "long_ema_window": 400
     },
-    "LINK/USDT": {
+    "LINK/USD": {
         "wallet_exposure": 0.2,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 20,
         "long_ema_window": 400
     },
-    "XRP/USDT": {
+    "XRP/USD": {
         "wallet_exposure": 0.2,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 15,
         "long_ema_window": 400
     },
-    "CHZ/USDT": {
+    "CHZ/USD": {
         "wallet_exposure": 0.1,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
