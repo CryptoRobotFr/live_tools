@@ -92,7 +92,7 @@ df_list = {}
 for pair in params_coin:
     params = params_coin[pair]
     ftx.cancel_all_open_order(pair)
-    df = ftx.get_last_historical(pair, timeframe, 1000)
+    df = ftx.get_last_historical(pair, timeframe, 2000)
     # -- Populate indicators --
     super_trend = SuperTrend(
         df["high"],
@@ -118,7 +118,7 @@ usd_balance = coin_balance["USD"]
 del coin_balance["USD"]
 del coin_in_usd["USD"]
 total_balance = usd_balance + sum(coin_in_usd.values())
-available_wallet_pct = 1
+available_wallet_pct = 1.01
 
 positions = []
 for coin in coin_in_usd:
