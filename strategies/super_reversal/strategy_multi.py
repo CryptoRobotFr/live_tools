@@ -35,21 +35,21 @@ params_coin = {
         "long_ema_window": 400
     },
     "LTC/USD": {
-        "wallet_exposure": 0.2,
+        "wallet_exposure": 0.1,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 5,
         "long_ema_window": 400
     },
     "LINK/USD": {
-        "wallet_exposure": 0.2,
+        "wallet_exposure": 0.1,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 20,
         "long_ema_window": 400
     },
     "XRP/USD": {
-        "wallet_exposure": 0.2,
+        "wallet_exposure": 0.1,
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 15,
@@ -60,6 +60,27 @@ params_coin = {
         "st_short_atr_window": 15,
         "st_short_atr_multiplier": 5,
         "short_ema_window": 20,
+        "long_ema_window": 400
+    },
+    "BNB/USD": {
+        "wallet_exposure": 0.1,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 30,
+        "long_ema_window": 400
+    },
+    "MATIC/USD": {
+        "wallet_exposure": 0.1,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
+    },
+    "ETH/USD": {
+        "wallet_exposure": 0.1,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 10,
         "long_ema_window": 400
     },
 }
