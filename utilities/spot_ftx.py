@@ -120,13 +120,15 @@ class SpotFtx():
             allBalance = allBalance['total']
             return_balance = {}
             for coin in allBalance.copy():
-                if coin != 'USD':
-                    try:
-                        if allBalance[coin] > 0:
+                try:
+                    if allBalance[coin] > 0:
+                        if coin != "USD":
                             return_balance[coin] = float(allBalance[coin]) * float(self.market[coin+'/USD']['info']['last'])
-                    except:
-                        pass
-                        print("Cannot get price of",coin+'/USD')
+                        else:
+                            return_balance[coin] = float(allBalance[coin])
+                except:
+                    pass
+                    print("Cannot get price of",coin+'/USD')
         except BaseException as err:
             print("An error occured", err)
             exit()
