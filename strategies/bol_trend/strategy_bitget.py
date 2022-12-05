@@ -19,14 +19,14 @@ f = open(
 secret = json.load(f)
 f.close()
 
-account_to_select = "bitget_sub1"
+account_to_select = "bitget_exemple"
 production = True
 
 pair = "BTC/USDT:USDT"
 timeframe = "1h"
 leverage = 0.1
 
-type=["long", "short"]
+type = ["long", "short"]
 bol_window = 100
 bol_std = 2.25
 min_bol_spread = 0
@@ -125,7 +125,7 @@ if len(position) > 0:
 
 else:
     print("No active position")
-    if open_long(row):
+    if open_long(row) and "long" in type:
         long_market_price = float(df.iloc[-1]["close"])
         long_quantity_in_usd = usd_balance * leverage
         long_quantity = float(bitget.convert_amount_to_precision(pair, float(
@@ -138,7 +138,7 @@ else:
         if production:
             bitget.place_market_order(pair, "buy", long_quantity, reduce=False)
 
-    elif open_short(row):
+    elif open_short(row) and "short" in type:
         short_market_price = float(df.iloc[-1]["close"])
         short_quantity_in_usd = usd_balance * leverage
         short_quantity = float(bitget.convert_amount_to_precision(pair, float(
