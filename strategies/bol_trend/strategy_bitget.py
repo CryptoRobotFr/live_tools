@@ -24,7 +24,7 @@ production = True
 
 pair = "BTC/USDT:USDT"
 timeframe = "1h"
-leverage = 0.1
+leverage = 1
 
 type = ["long", "short"]
 bol_window = 100
