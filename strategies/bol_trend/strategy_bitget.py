@@ -51,8 +51,8 @@ def close_long(row):
 
 def open_short(row):
     if (
-        row['n1_close'] > row['n1_higher_band'] 
-        and (row['close'] < row['higher_band']) 
+        row['n1_close'] > row['n1_lower_band'] 
+        and (row['close'] < row['lower_band']) 
         and ((row['n1_higher_band'] - row['n1_lower_band']) / row['n1_lower_band'] > min_bol_spread)
         and (row['close'] < row['long_ma'])        
     ):
