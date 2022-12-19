@@ -37,7 +37,7 @@ def open_long(row):
         row['n1_close'] < row['n1_higher_band'] 
         and (row['close'] > row['higher_band']) 
         and ((row['n1_higher_band'] - row['n1_lower_band']) / row['n1_lower_band'] > min_bol_spread)
-        (row['close'] > row['long_ma'])
+        and (row['close'] > row['long_ma'])
     ):
         return True
     else:
