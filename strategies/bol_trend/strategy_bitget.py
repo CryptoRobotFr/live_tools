@@ -26,6 +26,8 @@ pair = "BTC/USDT:USDT"
 timeframe = "1h"
 leverage = 1
 
+print(f"--- {pair} {timeframe} Leverage x {leverage} ---")
+
 type = ["long", "short"]
 bol_window = 100
 bol_std = 2.25
@@ -91,7 +93,7 @@ print("USD balance :", round(usd_balance, 2), "$")
 
 positions_data = bitget.get_open_position()
 position = [
-    {"side": d["side"], "size": d["contractSize"], "market_price":d["info"]["marketPrice"], "usd_size": float(d["contractSize"]) * float(d["info"]["marketPrice"]), "open_price": d["entryPrice"]}
+    {"side": d["side"], "size": float(d["contracts"]) * float(d["contractSize"]), "market_price":d["info"]["marketPrice"], "usd_size": float(d["contracts"]) * float(d["contractSize"]) * float(d["info"]["marketPrice"]), "open_price": d["entryPrice"]}
     for d in positions_data if d["symbol"] == pair]
 
 row = df.iloc[-2]
