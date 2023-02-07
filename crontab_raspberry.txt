@@ -1,0 +1,2 @@
+source /home/pi/env/CryptoRobotFr/bin/activate && cd /home/pi/CryptoRobot && python3 live_tools/
+python3 live_tools/strategies/bol_trend/strategy_bitget.py

@@ -1,0 +1,5 @@
+cryptography==3.3.2
+ccxt
+ta
+numpy
+sudo apt-get install libatlas-base-dev

@@ -3,15 +3,47 @@ sys.path.append("./live_tools")
 import ccxt
 import ta
 import pandas as pd
+import requests
+import os
 from utilities.perp_bitget import PerpBitget
 from utilities.custom_indicators import get_n_columns
 from datetime import datetime
 import time
 import json
 
+
+#---------------------------------------------------------------
+# Global variables
+#---------------------------------------------------------------
 now = datetime.now()
 current_time = now.strftime("%d/%m/%Y %H:%M:%S")
-print("--- Start Execution Time :", current_time, "---")
+global_message = ""
+
+#---------------------------------------------------------------
+# Functions
+#---------------------------------------------------------------
+def local_print(message):
+    """
+    Concate the display to be sent
+    """
+    global global_message
+    global_message += f"{message}\n"
+
+
+def display_execution():
+    """
+    Send the output to Telegram
+    """
+    TOKEN = os.getenv("TELEGRAM_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={global_message}"
+    requests.get(url).json()
+
+
+#---------------------------------------------------------------
+# Main functions
+#---------------------------------------------------------------
+local_print(f"--- Start Execution Time : {current_time} ---")
 
 f = open(
     "./live_tools/secret.json",
@@ -19,14 +51,14 @@ f = open(
 secret = json.load(f)
 f.close()
 
-account_to_select = "bitget_exemple"
-production = True
+account_to_select = "bitget_eth"
+production = False
 
-pair = "BTC/USDT:USDT"
+pair = "ETH/USDT:USDT"
 timeframe = "1h"
 leverage = 1
 
-print(f"--- {pair} {timeframe} Leverage x {leverage} ---")
+local_print(f"--- {pair} {timeframe} Leverage x {leverage} ---")
 
 type = ["long", "short"]
 bol_window = 100
@@ -89,7 +121,7 @@ df['long_ma'] = ta.trend.sma_indicator(close=df['close'], window=long_ma_window)
 df = get_n_columns(df, ["ma_band", "lower_band", "higher_band", "close"], 1)
 
 usd_balance = float(bitget.get_usdt_equity())
-print("USD balance :", round(usd_balance, 2), "$")
+local_print(f"USD balance : {round(usd_balance, 2)}$")
 
 positions_data = bitget.get_open_position()
 position = [
@@ -100,14 +132,14 @@ row = df.iloc[-2]
 
 if len(position) > 0:
     position = position[0]
-    print(f"Current position : {position}")
+    local_print(f"Current position : {position}")
     if position["side"] == "long" and close_long(row):
         close_long_market_price = float(df.iloc[-1]["close"])
         close_long_quantity = float(
             bitget.convert_amount_to_precision(pair, position["size"])
         )
         exchange_close_long_quantity = close_long_quantity * close_long_market_price
-        print(
+        local_print(
             f"Place Close Long Market Order: {close_long_quantity} {pair[:-5]} at the price of {close_long_market_price}$ ~{round(exchange_close_long_quantity, 2)}$"
         )
         if production:
@@ -119,14 +151,14 @@ if len(position) > 0:
             bitget.convert_amount_to_precision(pair, position["size"])
         )
         exchange_close_short_quantity = close_short_quantity * close_short_market_price
-        print(
+        local_print(
             f"Place Close Short Market Order: {close_short_quantity} {pair[:-5]} at the price of {close_short_market_price}$ ~{round(exchange_close_short_quantity, 2)}$"
         )
         if production:
             bitget.place_market_order(pair, "buy", close_short_quantity, reduce=True)
 
 else:
-    print("No active position")
+    local_print("No active position")
     if open_long(row) and "long" in type:
         long_market_price = float(df.iloc[-1]["close"])
         long_quantity_in_usd = usd_balance * leverage
@@ -134,7 +166,7 @@ else:
             bitget.convert_amount_to_precision(pair, long_quantity_in_usd / long_market_price)
         )))
         exchange_long_quantity = long_quantity * long_market_price
-        print(
+        local_print(
             f"Place Open Long Market Order: {long_quantity} {pair[:-5]} at the price of {long_market_price}$ ~{round(exchange_long_quantity, 2)}$"
         )
         if production:
@@ -147,7 +179,7 @@ else:
             bitget.convert_amount_to_precision(pair, short_quantity_in_usd / short_market_price)
         )))
         exchange_short_quantity = short_quantity * short_market_price
-        print(
+        local_print(
             f"Place Open Short Market Order: {short_quantity} {pair[:-5]} at the price of {short_market_price}$ ~{round(exchange_short_quantity, 2)}$"
         )
         if production:
@@ -155,6 +187,7 @@ else:
 
 now = datetime.now()
 current_time = now.strftime("%d/%m/%Y %H:%M:%S")
-print("--- End Execution Time :", current_time, "---")
+local_print(f"--- End Execution Time : {current_time} ---")
 
-
+# Display the output
+display_execution()
