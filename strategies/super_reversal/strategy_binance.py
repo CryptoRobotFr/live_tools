@@ -187,7 +187,7 @@ for pair in params_coin:
         df["low"],
         df["close"],
         params["st_short_atr_window"],
-        params["short_ema_window"],
+        params["st_short_atr_multiplier"],
     )
 
     df["super_trend_direction"] = super_trend.super_trend_direction()
