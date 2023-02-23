@@ -129,3 +129,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# config file
+secret-live.json
+.vscode/launch.json
