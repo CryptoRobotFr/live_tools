@@ -20,27 +20,146 @@ timeframe = "1h"
 account_to_select = "bybit_exemple"
 
 params_coin = {
+    "BTCUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 20,
+        "long_ema_window": 400
+    },
     "ETHUSDT": {
-        "wallet_exposure": 50,
-        "st_short_atr_window": 7,
-        "st_short_atr_multiplier": 4,
-        "short_ema_window": 49,
-        "long_ema_window": 250
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
     },
-    "BCHUSDT": {
-        "wallet_exposure": 25,
-        "st_short_atr_window": 17,
-        "st_short_atr_multiplier": 25,
-        "short_ema_window": 46,
-        "long_ema_window": 380
+    "ADAUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 35,
+        "long_ema_window": 400
     },
-    "YFIUSDT": {
-        "wallet_exposure": 25,
-        "st_short_atr_window": 18,
-        "st_short_atr_multiplier": 4,
-        "short_ema_window": 49,
-        "long_ema_window": 240
+    "XRPUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 30,
+        "long_ema_window": 400
     },
+    "BNBUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 30,
+        "long_ema_window": 400
+    },
+    "LINKUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 15,
+        "long_ema_window": 400
+    },
+    "LTCUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 25,
+        "long_ema_window": 400
+    },
+    "SOLUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 40,
+        "long_ema_window": 400
+    },
+    "AVAXUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 35,
+        "long_ema_window": 400
+    },
+    "DOTUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 40,
+        "long_ema_window": 400
+    },
+    "MATICUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
+    },
+    "NEARUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
+    },
+    "EGLDUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
+    },
+    "FTMUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 15,
+        "long_ema_window": 400
+    },
+    "ETCUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 5,
+        "long_ema_window": 400
+    },
+    "EOSUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 35,
+        "long_ema_window": 400
+    },
+    "FILUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 35,
+        "long_ema_window": 400
+    },
+    "SANDUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 20,
+        "long_ema_window": 400
+    },
+    "AXSUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 10,
+        "long_ema_window": 400
+    },
+    "LRCUSDT": {
+        "wallet_exposure": 0.05,
+        "st_short_atr_window": 15,
+        "st_short_atr_multiplier": 5,
+        "short_ema_window": 45,
+        "long_ema_window": 400
+    }
 }
 
 bybit = SpotBybit(
@@ -82,7 +201,6 @@ for pair in params_coin:
 
     df_list[pair] = df
 all_balance = bybit.get_all_balance()
-print(all_balance)
 symbol_balance = {}
 usdt_balance = all_balance["USDT"]
 usdt_all_balance = usdt_balance
@@ -108,7 +226,6 @@ for symbol in params_coin:
     
 for symbol in symbol_balance:
     pair = symbol + "USDT"
-    print(pair)
     row = df_list[pair].iloc[-1]
     if symbol_balance[symbol] == 0:
         if row["super_trend_direction"] == True and row["ema_short"] > row["ema_long"]:
