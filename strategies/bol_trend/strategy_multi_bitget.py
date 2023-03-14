@@ -405,52 +405,56 @@ print(f"Current VaR rsik 1 period: - {round(current_var, 2)}%, LONG exposition {
 
 for pair in df_list:
     if pair not in positions:
-        row = df_list[pair].iloc[-2]
-        last_price = float(df_list[pair].iloc[-1]["close"])
-        pct_sizing = params_coin[pair]["wallet_exposure"]
-        if open_long(row) and "long" in type:
-            long_market_price = float(last_price)
-            long_quantity_in_usd = usd_balance * pct_sizing * leverage
-            temp_positions = copy.deepcopy(positions_exposition)
-            temp_positions[pair]["long"] += (long_quantity_in_usd / usd_balance)
-            temp_long_exposition = long_exposition + (long_quantity_in_usd / usd_balance)
-            temp_var = var.get_var(positions=temp_positions)
-            if temp_var > max_var or temp_long_exposition > max_side_exposition:
-                print(f"Blocked open LONG on {pair}, because next VaR: - {round(current_var, 2)}%")
-            else:
-                long_quantity = float(bitget.convert_amount_to_precision(pair, float(
-                    bitget.convert_amount_to_precision(pair, long_quantity_in_usd / long_market_price)
-                )))
-                exchange_long_quantity = long_quantity * long_market_price
-                print(
-                    f"Place Open Long Market Order: {long_quantity} {pair[:-5]} at the price of {long_market_price}$ ~{round(exchange_long_quantity, 2)}$"
-                )
-                if production:
-                    bitget.place_market_order(pair, "buy", long_quantity, reduce=False)
-                    positions_exposition[pair]["long"] += (long_quantity_in_usd / usd_balance)
-                    long_exposition += (long_quantity_in_usd / usd_balance)
+        try:
+            row = df_list[pair].iloc[-2]
+            last_price = float(df_list[pair].iloc[-1]["close"])
+            pct_sizing = params_coin[pair]["wallet_exposure"]
+            if open_long(row) and "long" in type:
+                long_market_price = float(last_price)
+                long_quantity_in_usd = usd_balance * pct_sizing * leverage
+                temp_positions = copy.deepcopy(positions_exposition)
+                temp_positions[pair]["long"] += (long_quantity_in_usd / usd_balance)
+                temp_long_exposition = long_exposition + (long_quantity_in_usd / usd_balance)
+                temp_var = var.get_var(positions=temp_positions)
+                if temp_var > max_var or temp_long_exposition > max_side_exposition:
+                    print(f"Blocked open LONG on {pair}, because next VaR: - {round(current_var, 2)}%")
+                else:
+                    long_quantity = float(bitget.convert_amount_to_precision(pair, float(
+                        bitget.convert_amount_to_precision(pair, long_quantity_in_usd / long_market_price)
+                    )))
+                    exchange_long_quantity = long_quantity * long_market_price
+                    print(
+                        f"Place Open Long Market Order: {long_quantity} {pair[:-5]} at the price of {long_market_price}$ ~{round(exchange_long_quantity, 2)}$"
+                    )
+                    if production:
+                        bitget.place_market_order(pair, "buy", long_quantity, reduce=False)
+                        positions_exposition[pair]["long"] += (long_quantity_in_usd / usd_balance)
+                        long_exposition += (long_quantity_in_usd / usd_balance)
 
-        elif open_short(row) and "short" in type:
-            short_market_price = float(last_price)
-            short_quantity_in_usd = usd_balance * pct_sizing * leverage
-            temp_positions = copy.deepcopy(positions_exposition)
-            temp_positions[pair]["short"] += (short_quantity_in_usd / usd_balance)
-            temp_short_exposition = short_exposition + (short_quantity_in_usd / usd_balance)
-            temp_var = var.get_var(positions=temp_positions)
-            if temp_var > max_var or temp_short_exposition > max_side_exposition:
-                print(f"Blocked open SHORT on {pair}, because next VaR: - {round(current_var, 2)}%")
-            else:
-                short_quantity = float(bitget.convert_amount_to_precision(pair, float(
-                    bitget.convert_amount_to_precision(pair, short_quantity_in_usd / short_market_price)
-                )))
-                exchange_short_quantity = short_quantity * short_market_price
-                print(
-                    f"Place Open Short Market Order: {short_quantity} {pair[:-5]} at the price of {short_market_price}$ ~{round(exchange_short_quantity, 2)}$"
-                )
-                if production:
-                    bitget.place_market_order(pair, "sell", short_quantity, reduce=False)
-                    positions_exposition[pair]["short"] += (short_quantity_in_usd / usd_balance)
-                    short_exposition += (short_quantity_in_usd / usd_balance)
+            elif open_short(row) and "short" in type:
+                short_market_price = float(last_price)
+                short_quantity_in_usd = usd_balance * pct_sizing * leverage
+                temp_positions = copy.deepcopy(positions_exposition)
+                temp_positions[pair]["short"] += (short_quantity_in_usd / usd_balance)
+                temp_short_exposition = short_exposition + (short_quantity_in_usd / usd_balance)
+                temp_var = var.get_var(positions=temp_positions)
+                if temp_var > max_var or temp_short_exposition > max_side_exposition:
+                    print(f"Blocked open SHORT on {pair}, because next VaR: - {round(current_var, 2)}%")
+                else:
+                    short_quantity = float(bitget.convert_amount_to_precision(pair, float(
+                        bitget.convert_amount_to_precision(pair, short_quantity_in_usd / short_market_price)
+                    )))
+                    exchange_short_quantity = short_quantity * short_market_price
+                    print(
+                        f"Place Open Short Market Order: {short_quantity} {pair[:-5]} at the price of {short_market_price}$ ~{round(exchange_short_quantity, 2)}$"
+                    )
+                    if production:
+                        bitget.place_market_order(pair, "sell", short_quantity, reduce=False)
+                        positions_exposition[pair]["short"] += (short_quantity_in_usd / usd_balance)
+                        short_exposition += (short_quantity_in_usd / usd_balance)
+              
+        except Exception as e:
+            print(f"Error on {pair} ({e}), skip {pair}"                 
 
 
 now = datetime.now()
