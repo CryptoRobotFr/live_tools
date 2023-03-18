@@ -454,7 +454,7 @@ for pair in df_list:
                         short_exposition += (short_quantity_in_usd / usd_balance)
               
         except Exception as e:
-            print(f"Error on {pair} ({e}), skip {pair}"                 
+            print(f"Error on {pair} ({e}), skip {pair}")        
 
 
 now = datetime.now()
