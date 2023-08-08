@@ -200,14 +200,16 @@ class PerpBitget():
     @authentication_required
     def get_open_position(self,symbol=None):
         try:
-            positions = self._session.fetchPositions(symbol)
+            positions = self._session.fetchPositions(params = {
+                    "productType": "umcbl",
+                })
             truePositions = []
             for position in positions:
-                if float(position['contracts']) > 0:
+                if float(position['contracts']) > 0 and (symbol is None or position['symbol'] == symbol):
                     truePositions.append(position)
             return truePositions
         except BaseException as err:
-            raise TypeError("An error occured in get_open_position", err)
+            raise Exception("An error occured in get_open_position", err)
 
     @authentication_required
     def cancel_order_by_id(self, id, symbol, conditionnal=False):
@@ -218,3 +220,27 @@ class PerpBitget():
                 return self._session.cancel_order(id, symbol)
         except BaseException as err:
             raise Exception("An error occured in cancel_order_by_id", err)
+        
+    @authentication_required
+    def cancel_all_open_order(self):
+        try:
+            return self._session.cancel_all_orders(
+                params = {
+                    "marginCoin": "USDT",
+                }
+            )
+        except BaseException as err:
+            raise Exception("An error occured in cancel_all_open_order", err)
+        
+    @authentication_required
+    def cancel_order_ids(self, ids=[], symbol=None):
+        try:
+            return self._session.cancel_orders(
+                ids=ids,
+                symbol=symbol,
+                params = {
+                    "marginCoin": "USDT",
+                }
+            )
+        except BaseException as err:
+            raise Exception("An error occured in cancel_order_ids", err)
