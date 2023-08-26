@@ -13,7 +13,7 @@ pair = "BTC/USDT:USDT"
 leverage = 1
 type=["long", "short"]
 base_window = 5
-envelopes = [0.07, 0.10, 0.12]
+envelopes = [0.08, 0.10, 0.12]
 src="close"
 
 f = open(
@@ -29,7 +29,7 @@ bitget = PerpBitget(
     password=secret[account_to_select]["password"],
 )
 
-candles = bitget.get_last_historical(pair, "1h", 100)
+candles = bitget.get_last_historical(pair, "5m", 100)
 df = pd.DataFrame(candles)
 
 high_envelopes = [round(1/(1-e)-1, 3) for e in envelopes]
