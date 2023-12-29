@@ -205,7 +205,7 @@ class PerpBitget():
                 })
             truePositions = []
             for position in positions:
-                if float(position['contracts']) > 0 and (symbol is None or position['symbol'] == symbol):
+                if position['contracts'] is not None and float(position['contracts']) > 0 and (symbol is None or position['symbol'] == symbol):
                     truePositions.append(position)
             return truePositions
         except BaseException as err:
