@@ -1,4 +1,6 @@
+import logging
 import sys
+
 sys.path.append("./live_tools")
 import ccxt
 import ta
@@ -28,6 +30,9 @@ type = ["long", "short"]
 leverage = 1
 max_var = 1
 max_side_exposition = 1
+
+margin_mode = "fixed"  # fixed or crossed
+exchange_leverage = 1
 
 params_coin = {
     "BTC/USDT:USDT": {
@@ -222,12 +227,6 @@ params_coin = {
         "bb_std": 2.25,
         "long_ma_window": 500
     },
-    "YFI/USDT:USDT": {
-        "wallet_exposure": 0.05,
-        "bb_window": 100,
-        "bb_std": 1,
-        "long_ma_window": 500
-    },
     "WOO/USDT:USDT": {
         "wallet_exposure": 0.05,
         "bb_window": 100,
@@ -260,15 +259,17 @@ params_coin = {
     },
 }
 
+
 def open_long(row):
     if (
-        row['n1_close'] < row['n1_higher_band'] 
-        and (row['close'] > row['higher_band']) 
+        row['n1_close'] < row['n1_higher_band']
+        and (row['close'] > row['higher_band'])
         and (row['close'] > row['long_ma'])
     ):
         return True
     else:
         return False
+
 
 def close_long(row):
     if (row['close'] < row['ma_band']):
@@ -276,21 +277,24 @@ def close_long(row):
     else:
         return False
 
+
 def open_short(row):
     if (
-        row['n1_close'] > row['n1_lower_band'] 
-        and (row['close'] < row['lower_band']) 
-        and (row['close'] < row['long_ma'])        
+        row['n1_close'] > row['n1_lower_band']
+        and (row['close'] < row['lower_band'])
+        and (row['close'] < row['long_ma'])
     ):
         return True
     else:
         return False
+
 
 def close_short(row):
     if (row['close'] > row['ma_band']):
         return True
     else:
         return False
+
 
 print(f"--- Bollinger Trend on {len(params_coin)} tokens {timeframe} Leverage x{leverage} ---")
 
@@ -304,11 +308,25 @@ bitget = PerpBitget(
 df_list = {}
 for pair in params_coin:
     temp_data = bitget.get_more_last_historical_async(pair, timeframe, 1000)
-    if len(temp_data) == 990:
-        df_list[pair] = temp_data
-    else:
-        print(f"Pair {pair} not loaded, length: {len(temp_data)}")
+    try:
+        if len(temp_data) == 990:
+            df_list[pair] = temp_data
+        else:
+            print(f"Pair {pair} not loaded, length: {len(temp_data)}")
+    except Exception as Argument:
+        logging.exception(f"Error while getting history of pair {pair}")
+
 print("Data OHLCV loaded 100%")
+
+
+def setExchangeLeverage(pair):
+    try:
+        print(f"Setting {margin_mode} x{exchange_leverage} on {pair} pair...")
+        bitget.set_margin_mode_and_leverage(
+            pair, margin_mode, exchange_leverage
+        )
+    except Exception as e:
+        print(e)
 
 for pair in df_list:
     df = df_list[pair]
@@ -319,7 +337,7 @@ for pair in df_list:
     df["ma_band"] = bol_band.bollinger_mavg()
 
     df['long_ma'] = ta.trend.sma_indicator(close=df['close'], window=params["long_ma_window"])
-    
+
     df["n1_close"] = df["close"].shift(1)
     df["n1_lower_band"] = df["lower_band"].shift(1)
     df["n1_higher_band"] = df["higher_band"].shift(1)
@@ -337,17 +355,25 @@ print("USD balance :", round(usd_balance, 2), "$")
 
 positions_data = bitget.get_open_position()
 position_list = [
-    {"pair": d["symbol"], "side": d["side"], "size": float(d["contracts"]) * float(d["contractSize"]), "market_price":d["info"]["marketPrice"], "usd_size": float(d["contracts"]) * float(d["contractSize"]) * float(d["info"]["marketPrice"]), "open_price": d["entryPrice"]}
+    {"pair": d["symbol"], "side": d["side"], "size": float(d["contracts"]) * float(d["contractSize"]),
+     "market_price": d["info"]["marketPrice"],
+     "usd_size": float(d["contracts"]) * float(d["contractSize"]) * float(d["info"]["marketPrice"]),
+     "open_price": d["entryPrice"]}
     for d in positions_data if d["symbol"] in df_list]
 
 positions = {}
 for pos in position_list:
-    positions[pos["pair"]] = {"side": pos["side"], "size": pos["size"], "market_price": pos["market_price"], "usd_size": pos["usd_size"], "open_price": pos["open_price"]}
+    positions[pos["pair"]] = {"side": pos["side"], "size": pos["size"], "market_price": pos["market_price"],
+                              "usd_size": pos["usd_size"], "open_price": pos["open_price"]}
 
 print(f"{len(positions)} active positions ({list(positions.keys())})")
 
 # Check for closing positions...
 positions_to_delete = []
+
+
+
+
 for pair in positions:
     row = df_list[pair].iloc[-2]
     last_price = float(df_list[pair].iloc[-1]["close"])
@@ -362,7 +388,10 @@ for pair in positions:
         print(
             f"Place Close Long Market Order: {close_long_quantity} {pair[:-5]} at the price of {close_long_market_price}$ ~{round(exchange_close_long_quantity, 2)}$"
         )
+
+
         if production:
+            setExchangeLeverage(pair)
             bitget.place_market_order(pair, "sell", close_long_quantity, reduce=True)
             positions_to_delete.append(pair)
 
@@ -375,7 +404,15 @@ for pair in positions:
         print(
             f"Place Close Short Market Order: {close_short_quantity} {pair[:-5]} at the price of {close_short_market_price}$ ~{round(exchange_close_short_quantity, 2)}$"
         )
+        try:
+            print(f"Setting {margin_mode} x{exchange_leverage} on {pair} pair...")
+            bitget.set_margin_mode_and_leverage(
+                pair, margin_mode, exchange_leverage
+            )
+        except Exception as e:
+            print(e)
         if production:
+            setExchangeLeverage(pair)
             bitget.place_market_order(pair, "buy", close_short_quantity, reduce=True)
             positions_to_delete.append(pair)
 
@@ -387,21 +424,24 @@ positions_exposition = {}
 long_exposition = 0
 short_exposition = 0
 for pair in df_list:
-    positions_exposition[pair] = {"long":0, "short":0}
+    positions_exposition[pair] = {"long": 0, "short": 0}
 
 positions_data = bitget.get_open_position()
 for pos in positions_data:
     if pos["symbol"] in df_list and pos["side"] == "long":
-       pct_exposition = (float(pos["contracts"]) * float(pos["contractSize"]) * float(pos["info"]["marketPrice"])) / usd_balance
-       positions_exposition[pos["symbol"]]["long"] += pct_exposition
-       long_exposition += pct_exposition
+        pct_exposition = (float(pos["contracts"]) * float(pos["contractSize"]) * float(
+            pos["info"]["marketPrice"])) / usd_balance
+        positions_exposition[pos["symbol"]]["long"] += pct_exposition
+        long_exposition += pct_exposition
     elif pos["symbol"] in df_list and pos["side"] == "short":
-       pct_exposition = (float(pos["contracts"]) * float(pos["contractSize"]) * float(pos["info"]["marketPrice"])) / usd_balance
-       positions_exposition[pos["symbol"]]["short"] += pct_exposition
-       short_exposition += pct_exposition
+        pct_exposition = (float(pos["contracts"]) * float(pos["contractSize"]) * float(
+            pos["info"]["marketPrice"])) / usd_balance
+        positions_exposition[pos["symbol"]]["short"] += pct_exposition
+        short_exposition += pct_exposition
 
 current_var = var.get_var(positions=positions_exposition)
-print(f"Current VaR rsik 1 period: - {round(current_var, 2)}%, LONG exposition {round(long_exposition * 100, 2)}%, SHORT exposition {round(short_exposition * 100, 2)}%")
+print(
+    f"Current VaR rsik 1 period: - {round(current_var, 2)}%, LONG exposition {round(long_exposition * 100, 2)}%, SHORT exposition {round(short_exposition * 100, 2)}%")
 
 for pair in df_list:
     if pair not in positions:
@@ -427,6 +467,7 @@ for pair in df_list:
                         f"Place Open Long Market Order: {long_quantity} {pair[:-5]} at the price of {long_market_price}$ ~{round(exchange_long_quantity, 2)}$"
                     )
                     if production:
+                        setExchangeLeverage(pair)
                         bitget.place_market_order(pair, "buy", long_quantity, reduce=False)
                         positions_exposition[pair]["long"] += (long_quantity_in_usd / usd_balance)
                         long_exposition += (long_quantity_in_usd / usd_balance)
@@ -449,13 +490,13 @@ for pair in df_list:
                         f"Place Open Short Market Order: {short_quantity} {pair[:-5]} at the price of {short_market_price}$ ~{round(exchange_short_quantity, 2)}$"
                     )
                     if production:
+                        setExchangeLeverage(pair)
                         bitget.place_market_order(pair, "sell", short_quantity, reduce=False)
                         positions_exposition[pair]["short"] += (short_quantity_in_usd / usd_balance)
                         short_exposition += (short_quantity_in_usd / usd_balance)
-              
-        except Exception as e:
-            print(f"Error on {pair} ({e}), skip {pair}")        
 
+        except Exception as e:
+            print(f"Error on {pair} ({e}), skip {pair}")
 
 now = datetime.now()
 current_time = now.strftime("%d/%m/%Y %H:%M:%S")

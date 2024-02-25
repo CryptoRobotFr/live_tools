@@ -1,3 +1,5 @@
+import logging
+
 import ccxt
 import pandas as pd
 import time
@@ -49,7 +51,7 @@ class PerpBitget():
         # define worker function before a Pool is instantiated
         full_result = []
         def worker(i):
-            
+
             try:
                 return self._session.fetch_ohlcv(
                 symbol, timeframe, round(time.time() * 1000) - (i*1000*60*60), limit=100)
@@ -88,10 +90,10 @@ class PerpBitget():
     def place_limit_order(self, symbol, side, amount, price, reduce=False):
         try:
             return self._session.createOrder(
-                symbol, 
-                'limit', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount), 
+                symbol,
+                'limit',
+                side,
+                self.convert_amount_to_precision(symbol, amount),
                 self.convert_price_to_precision(symbol, price),
                 params={"reduceOnly": reduce}
             )
@@ -100,13 +102,13 @@ class PerpBitget():
 
     @authentication_required
     def place_limit_stop_loss(self, symbol, side, amount, trigger_price, price, reduce=False):
-        
+
         try:
             return self._session.createOrder(
-                symbol, 
-                'limit', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount), 
+                symbol,
+                'limit',
+                side,
+                self.convert_amount_to_precision(symbol, amount),
                 self.convert_price_to_precision(symbol, price),
                 params = {
                     'stopPrice': self.convert_price_to_precision(symbol, trigger_price),  # your stop price
@@ -121,9 +123,9 @@ class PerpBitget():
     def place_market_order(self, symbol, side, amount, reduce=False):
         try:
             return self._session.createOrder(
-                symbol, 
-                'market', 
-                side, 
+                symbol,
+                'market',
+                side,
                 self.convert_amount_to_precision(symbol, amount),
                 None,
                 params={"reduceOnly": reduce}
@@ -133,13 +135,13 @@ class PerpBitget():
 
     @authentication_required
     def place_market_stop_loss(self, symbol, side, amount, trigger_price, reduce=False):
-        
+
         try:
             return self._session.createOrder(
-                symbol, 
-                'market', 
-                side, 
-                self.convert_amount_to_precision(symbol, amount), 
+                symbol,
+                'market',
+                side,
+                self.convert_amount_to_precision(symbol, amount),
                 self.convert_price_to_precision(symbol, trigger_price),
                 params = {
                     'stopPrice': self.convert_price_to_precision(symbol, trigger_price),  # your stop price
@@ -220,7 +222,7 @@ class PerpBitget():
                 return self._session.cancel_order(id, symbol)
         except BaseException as err:
             raise Exception("An error occured in cancel_order_by_id", err)
-        
+
     @authentication_required
     def cancel_all_open_order(self):
         try:
@@ -231,7 +233,7 @@ class PerpBitget():
             )
         except BaseException as err:
             raise Exception("An error occured in cancel_all_open_order", err)
-        
+
     @authentication_required
     def cancel_order_ids(self, ids=[], symbol=None):
         try:
@@ -244,3 +246,46 @@ class PerpBitget():
             )
         except BaseException as err:
             raise Exception("An error occured in cancel_order_ids", err)
+
+    @authentication_required
+    def set_margin_mode_and_leverage(self, pair, margin_mode, leverage):
+        if margin_mode not in ["crossed", "fixed"]:
+            raise Exception("Margin mode must be either 'crossed' or 'fixed'")
+        try:
+            self._session.set_margin_mode(
+                margin_mode,
+                pair,
+                params={"productType": "USDT-FUTURES", "marginCoin": "USDT"},
+            )
+        except Exception as Argument:
+            logging.exception(f"Error set_margin_mode on {pair}")
+        try:
+            if margin_mode == "fixed":
+
+                self._session.set_leverage(
+                    leverage,
+                    pair,
+                    params={
+                        "productType": "USDT-FUTURES",
+                        "marginCoin": "USDT",
+                        "holdSide": "long",
+                    },
+                )
+                self._session.set_leverage(
+                    leverage,
+                    pair,
+                    params={
+                        "productType": "USDT-FUTURES",
+                        "marginCoin": "USDT",
+                        "holdSide": "short",
+                    },
+                )
+
+            else:
+                self._session.set_leverage(
+                    leverage,
+                    pair,
+                    params={"productType": "USDT-FUTURES", "marginCoin": "USDT"},
+                )
+        except Exception as Argument:
+            logging.exception(f"Error set_margin_mode_and_leverage on {pair}")
